@@ -4,27 +4,18 @@ from django.utils.text import slugify
 
 
 class Blog(models.Model):
-    title = models.CharField(max_length=30, verbose_name='عنوان', unique=True)
-
-    body = models.TextField(verbose_name='متن')
-
-    image = models.ImageField(verbose_name='تصویر بلاگ', upload_to='Blog',
-                              help_text='اندازه تصاویر 470x570 پیکسل باشد')
-
-    category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='دسته بندی', related_name='blog')
-
-    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='نویسنده')
-
-    tag = models.ManyToManyField('Tag', verbose_name='تگ ها', related_name='tag')
-
-    situation = models.BooleanField(verbose_name='وضعیت انتشار', default=False)
-
-    created_at = models.DateField(verbose_name='تاریخ ایجاد', auto_now_add=True)
-
-    update = models.DateTimeField(verbose_name='تاریخ به روزرسانی', auto_now=True)
-
-    slug = models.SlugField(blank=True, verbose_name='اسلاگ',
-                            help_text='این فیلد به صورت خودکار تکمیل میشود')
+    title = models.CharField(max_length=30, verbose_name='Title', unique=True)
+    body = models.TextField(verbose_name='Body')
+    image = models.ImageField(verbose_name='Blog Image', upload_to='Blog',
+                              help_text='Image size should be 470x570 pixels')
+    category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Category', related_name='blog')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Author')
+    tag = models.ManyToManyField('Tag', verbose_name='Tags', related_name='tag')
+    situation = models.BooleanField(verbose_name='Publication Status', default=False)
+    created_at = models.DateField(verbose_name='Creation Date', auto_now_add=True)
+    update = models.DateTimeField(verbose_name='Update Date', auto_now=True)
+    slug = models.SlugField(blank=True, verbose_name='Slug',
+                            help_text='This field is automatically filled')
 
     def __str__(self):
         return self.title
@@ -34,17 +25,15 @@ class Blog(models.Model):
         super(Blog, self).save()
 
     class Meta:
-        verbose_name = 'بلاگ'
-        verbose_name_plural = 'بلاگ ها'
+        verbose_name = 'Blog'
+        verbose_name_plural = 'Blogs'
 
 
 class Category(models.Model):
-    title = models.CharField(max_length=25, verbose_name='عنوان دسته بندی', unique=True)
-
-    slug = models.SlugField(blank=True, verbose_name='اسلاگ',
-                            help_text='این فیلد به صورت خودکار تکمیل میشود')
-
-    date = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
+    title = models.CharField(max_length=25, verbose_name='Category Title', unique=True)
+    slug = models.SlugField(blank=True, verbose_name='Slug',
+                            help_text='This field is automatically filled')
+    date = models.DateTimeField(verbose_name='Creation Date', auto_now_add=True)
 
     def __str__(self):
         return self.title
@@ -54,17 +43,15 @@ class Category(models.Model):
         super(Category, self).save()
 
     class Meta:
-        verbose_name = 'دسته بندی'
-        verbose_name_plural = 'دسته بندی ها'
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=25, verbose_name='عنوان تگ', unique=True)
-
-    slug = models.SlugField(blank=True, unique=True, verbose_name='اسلاگ',
-                            help_text='این فیلد به صورت خودکار تکمیل میشود')
-
-    date = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
+    title = models.CharField(max_length=25, verbose_name='Tag Title', unique=True)
+    slug = models.SlugField(blank=True, unique=True, verbose_name='Slug',
+                            help_text='This field is automatically filled')
+    date = models.DateTimeField(verbose_name='Creation Date', auto_now_add=True)
 
     def __str__(self):
         return self.title
@@ -74,28 +61,23 @@ class Tag(models.Model):
         super(Tag, self).save()
 
     class Meta:
-        verbose_name = 'تگ'
-        verbose_name_plural = 'تگ ها'
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
 
 
 class Comment(models.Model):
-    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='comments', verbose_name='مقاله',
-                             help_text='کامنت مدنظر برای چه مقاله ای هست')
-
-    name = models.CharField(max_length=20, verbose_name='نام و نام خانوادگی')
-
-    email = models.EmailField(verbose_name='ایمیل', null=True)
-
-    text = models.TextField(verbose_name='متن کامنت')
-
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='replies', verbose_name='جواب کامنت',
-                               help_text='اگر این کامنت درجواب کامنت دیگری باشد تکمیل میگردد', null=True, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='comments', verbose_name='Blog',
+                             help_text='Comment belongs to which blog post')
+    name = models.CharField(max_length=20, verbose_name='Name')
+    email = models.EmailField(verbose_name='Email', null=True)
+    text = models.TextField(verbose_name='Comment Text')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='replies', verbose_name='Reply Comment',
+                               help_text='If this comment is a reply to another comment, it will be filled', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Creation Date')
 
     def __str__(self):
         return self.text[:10]
 
     class Meta:
-        verbose_name = 'کامنت'
-        verbose_name_plural = 'کامنت ها'
+        verbose_name = 'Comment'
+        verbose_name_plural = 'Comments'

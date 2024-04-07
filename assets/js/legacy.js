@@ -1,19 +1,4 @@
 
-/*jshint
-   asi: true,
-   unused: true,
-   boss: true,
-   loopfunc: true,
-   eqnull: true
- */
-
-
-/*!
- * Legacy browser support
- */
-
-
-// Map array support
 if ( ![].map ) {
     Array.prototype.map = function ( callback, self ) {
         var array = this, len = array.length, newArray = new Array( len )
@@ -27,7 +12,6 @@ if ( ![].map ) {
 }
 
 
-// Filter array support
 if ( ![].filter ) {
     Array.prototype.filter = function( callback ) {
         if ( this == null ) throw new TypeError()
@@ -45,7 +29,6 @@ if ( ![].filter ) {
 }
 
 
-// Index of array support
 if ( ![].indexOf ) {
     Array.prototype.indexOf = function( searchElement ) {
         if ( this == null ) throw new TypeError()
@@ -71,12 +54,7 @@ if ( ![].indexOf ) {
 }
 
 
-/*!
- * Cross-Browser Split 1.1.1
- * Copyright 2007-2012 Steven Levithan <stevenlevithan.com>
- * Available under the MIT License
- * http://blog.stevenlevithan.com/archives/cross-browser-split
- */
+
 var nativeSplit = String.prototype.split, compliantExecNpcg = /()??/.exec('')[1] === undefined
 String.prototype.split = function(separator, limit) {
     var str = this

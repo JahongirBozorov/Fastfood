@@ -2,42 +2,42 @@ from django.db import models
 
 
 class HomeSlider(models.Model):
-    image = models.ImageField(upload_to='Slider', verbose_name='عکس اسلایدر',
-                              help_text='اندازه عکس ها باید 1920x1280 پیکسل باشند')
+    image = models.ImageField(upload_to='Slider', verbose_name='Slider Image',
+                              help_text='Image size should be 1920x1280 pixels')
 
-    update_at = models.DateTimeField(verbose_name='تاریخ به روزرسانی', auto_now=True)
-    date = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
+    update_at = models.DateTimeField(verbose_name='Update Date', auto_now=True)
+    date = models.DateTimeField(verbose_name='Creation Date', auto_now_add=True)
 
     class Meta:
-        verbose_name = 'عکس اسلایدر'
-        verbose_name_plural = 'عکس های اسلایدر'
+        verbose_name = 'Slider Image'
+        verbose_name_plural = 'Slider Images'
 
     def __str__(self):
-        return 'عکس اسلایدر ' + str(self.id)
+        return 'Slider Image ' + str(self.id)
 
 
 class Gallery(models.Model):
-    image = models.ImageField(upload_to='Gallery', verbose_name='عکس گالری',
-                              help_text='اندازه عکس ها باید 1200x800 پیکسل باشند')
+    image = models.ImageField(upload_to='Gallery', verbose_name='Gallery Image',
+                              help_text='Image size should be 1200x800 pixels')
 
-    update_at = models.DateTimeField(verbose_name='تاریخ به روزرسانی', auto_now=True)
-    date = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
+    update_at = models.DateTimeField(verbose_name='Update Date', auto_now=True)
+    date = models.DateTimeField(verbose_name='Creation Date', auto_now_add=True)
 
     class Meta:
-        verbose_name = 'عکس گالری'
-        verbose_name_plural = 'عکس های گالری'
+        verbose_name = 'Gallery Image'
+        verbose_name_plural = 'Gallery Images'
 
     def __str__(self):
-        return 'عکس گالری ' + str(self.id)
+        return 'Gallery Image ' + str(self.id)
 
 
 class ContactUs(models.Model):
-    name = models.CharField(max_length=30, verbose_name='نام و نام خانوادگی')
-    email = models.EmailField(verbose_name='ایمیل')
-    phone = models.CharField(max_length=11, verbose_name='شماره همراه')
-    message = models.TextField(verbose_name='پیام')
-    created_at = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
+    name = models.CharField(max_length=30, verbose_name='Full Name')
+    email = models.EmailField(verbose_name='Email')
+    phone = models.CharField(max_length=11, verbose_name='Phone Number')
+    message = models.TextField(verbose_name='Message')
+    created_at = models.DateTimeField(verbose_name='Creation Date', auto_now_add=True)
 
     class Meta:
-        verbose_name = 'پیام'
-        verbose_name_plural = 'پیام ها'
+        verbose_name = 'Message'
+        verbose_name_plural = 'Messages'

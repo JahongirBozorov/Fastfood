@@ -1,36 +1,25 @@
-/*!
- * Date picker for pickadate.js v3.5.6
- * http://amsul.github.io/pickadate.js/date.htm
- */
+
 
 (function ( factory ) {
 
-    // AMD.
     if ( typeof define == 'function' && define.amd )
         define( ['./picker', 'jquery'], factory )
 
-    // Node.js/browserify.
     else if ( typeof exports == 'object' )
         module.exports = factory( require('./picker.js'), require('jquery') )
 
-    // Browser globals.
     else factory( Picker, jQuery )
 
 }(function( Picker, $ ) {
 
 
-/**
- * Globals and constants
- */
 var DAYS_IN_WEEK = 7,
     WEEKS_IN_CALENDAR = 6,
     _ = Picker._
 
 
 
-/**
- * The date picker constructor
- */
+
 function DatePicker( picker, settings ) {
 
     var calendar = this,
@@ -43,17 +32,14 @@ function DatePicker( picker, settings ) {
 
             return element.currentStyle ?
 
-                // For IE.
                 element.currentStyle.direction == 'rtl' :
 
-                // For normal browsers.
                 getComputedStyle( picker.$root[0] ).direction == 'rtl'
         }
 
     calendar.settings = settings
     calendar.$node = picker.$node
 
-    // The queue of methods that will be used to build item objects.
     calendar.queue = {
         min: 'measure create',
         max: 'measure create',
@@ -65,7 +51,6 @@ function DatePicker( picker, settings ) {
         enable: 'activate'
     }
 
-    // The component's item object.
     calendar.item = {}
 
     calendar.item.clear = null
@@ -79,8 +64,7 @@ function DatePicker( picker, settings ) {
         set( 'max', settings.max ).
         set( 'now' )
 
-    // When there’s a value, set the `select`, which in turn
-    // also sets the `highlight` and `view`.
+
     if ( valueString ) {
         calendar.set( 'select', valueString, {
             format: formatString,
@@ -88,7 +72,6 @@ function DatePicker( picker, settings ) {
         })
     }
 
-    // If there’s no value, default to highlighting “today”.
     else {
         calendar.
             set( 'select', null ).
@@ -96,7 +79,6 @@ function DatePicker( picker, settings ) {
     }
 
 
-    // The keycode to movement mapping.
     calendar.key = {
         40: 7, // Down
         38: -7, // Up
@@ -115,7 +97,6 @@ function DatePicker( picker, settings ) {
     }
 
 
-    // Bind some picker events.
     picker.
         on( 'render', function() {
             picker.$root.find( '.' + settings.klass.selectMonth ).on( 'change', function() {
@@ -144,34 +125,26 @@ function DatePicker( picker, settings ) {
             picker.$root.find( 'button, select' ).attr( 'disabled', true )
         }, 1 )
 
-} //DatePicker
+} 
 
 
-/**
- * Set a datepicker item object.
- */
 DatePicker.prototype.set = function( type, value, options ) {
 
     var calendar = this,
         calendarItem = calendar.item
 
-    // If the value is `null` just set it immediately.
     if ( value === null ) {
         if ( type == 'clear' ) type = 'select'
         calendarItem[ type ] = value
         return calendar
     }
 
-    // Otherwise go through the queue of methods, and invoke the functions.
-    // Update this as the time unit, and set the final value as this item.
-    // * In the case of `enable`, keep the queue but set `disable` instead.
-    //   And in the case of `flip`, keep the queue but set `enable` instead.
+
     calendarItem[ ( type == 'enable' ? 'disable' : type == 'flip' ? 'enable' : type ) ] = calendar.queue[ type ].split( ' ' ).map( function( method ) {
         value = calendar[ method ]( type, value, options )
         return value
     }).pop()
 
-    // Check if we need to cascade through more updates.
     if ( type == 'select' ) {
         calendar.set( 'highlight', calendarItem.select, options )
     }
@@ -188,57 +161,44 @@ DatePicker.prototype.set = function( type, value, options ) {
     }
 
     return calendar
-} //DatePicker.prototype.set
+} 
 
 
-/**
- * Get a datepicker item object.
- */
 DatePicker.prototype.get = function( type ) {
     return this.item[ type ]
-} //DatePicker.prototype.get
+} 
 
 
-/**
- * Create a picker date object.
- */
 DatePicker.prototype.create = function( type, value, options ) {
 
     var isInfiniteValue,
         calendar = this
 
-    // If there’s no value, use the type as the value.
     value = value === undefined ? type : value
 
 
-    // If it’s infinity, update the value.
     if ( value == -Infinity || value == Infinity ) {
         isInfiniteValue = value
     }
 
-    // If it’s an object, use the native date object.
     else if ( $.isPlainObject( value ) && _.isInteger( value.pick ) ) {
         value = value.obj
     }
 
-    // If it’s an array, convert it into a date and make sure
-    // that it’s a valid date – otherwise default to today.
+  
     else if ( $.isArray( value ) ) {
         value = new Date( value[ 0 ], value[ 1 ], value[ 2 ] )
         value = _.isDate( value ) ? value : calendar.create().obj
     }
 
-    // If it’s a number or date object, make a normalized date.
     else if ( _.isInteger( value ) || _.isDate( value ) ) {
         value = calendar.normalize( new Date( value ), options )
     }
 
-    // If it’s a literal true or any other case, set it to now.
-    else /*if ( value === true )*/ {
+    else  {
         value = calendar.now( type, value, options )
     }
 
-    // Return the compiled object.
     return {
         year: isInfiniteValue || value.getFullYear(),
         month: isInfiniteValue || value.getMonth(),
@@ -247,13 +207,9 @@ DatePicker.prototype.create = function( type, value, options ) {
         obj: isInfiniteValue || value,
         pick: isInfiniteValue || value.getTime()
     }
-} //DatePicker.prototype.create
+} 
 
 
-/**
- * Create a range limit object using an array, date object,
- * literal “true”, or integer relative to another time.
- */
 DatePicker.prototype.createRange = function( from, to ) {
 
     var calendar = this,
@@ -264,7 +220,6 @@ DatePicker.prototype.createRange = function( from, to ) {
             return date
         }
 
-    // Create objects if possible.
     if ( !_.isInteger( from ) ) {
         from = createDate( from )
     }
@@ -272,7 +227,6 @@ DatePicker.prototype.createRange = function( from, to ) {
         to = createDate( to )
     }
 
-    // Create relative dates.
     if ( _.isInteger( from ) && $.isPlainObject( to ) ) {
         from = [ to.year, to.month, to.date + from ];
     }
@@ -284,26 +238,19 @@ DatePicker.prototype.createRange = function( from, to ) {
         from: createDate( from ),
         to: createDate( to )
     }
-} //DatePicker.prototype.createRange
+} 
 
-
-/**
- * Check if a date unit falls within a date range object.
- */
 DatePicker.prototype.withinRange = function( range, dateUnit ) {
     range = this.createRange(range.from, range.to)
     return dateUnit.pick >= range.from.pick && dateUnit.pick <= range.to.pick
 }
 
 
-/**
- * Check if two date range objects overlap.
- */
+
 DatePicker.prototype.overlapRanges = function( one, two ) {
 
     var calendar = this
 
-    // Convert the ranges into comparable dates.
     one = calendar.createRange( one.from, one.to )
     two = calendar.createRange( two.from, two.to )
 
@@ -312,9 +259,7 @@ DatePicker.prototype.overlapRanges = function( one, two ) {
 }
 
 
-/**
- * Get the date today.
- */
+
 DatePicker.prototype.now = function( type, value, options ) {
     value = new Date()
     if ( options && options.rel ) {
@@ -324,9 +269,7 @@ DatePicker.prototype.now = function( type, value, options ) {
 }
 
 
-/**
- * Navigate to next/prev month.
- */
+
 DatePicker.prototype.navigate = function( type, value, options ) {
 
     var targetDateObject,
@@ -335,8 +278,7 @@ DatePicker.prototype.navigate = function( type, value, options ) {
         targetDate,
         isTargetArray = $.isArray( value ),
         isTargetObject = $.isPlainObject( value ),
-        viewsetObject = this.item.view/*,
-        safety = 100*/
+        viewsetObject = this.item.view,
 
 
     if ( isTargetArray || isTargetObject ) {
@@ -352,141 +294,91 @@ DatePicker.prototype.navigate = function( type, value, options ) {
             targetDate = +value[2]
         }
 
-        // If we’re navigating months but the view is in a different
-        // month, navigate to the view’s year and month.
         if ( options && options.nav && viewsetObject && viewsetObject.month !== targetMonth ) {
             targetYear = viewsetObject.year
             targetMonth = viewsetObject.month
         }
 
-        // Figure out the expected target year and month.
         targetDateObject = new Date( targetYear, targetMonth + ( options && options.nav ? options.nav : 0 ), 1 )
         targetYear = targetDateObject.getFullYear()
         targetMonth = targetDateObject.getMonth()
 
-        // If the month we’re going to doesn’t have enough days,
-        // keep decreasing the date until we reach the month’s last date.
-        while ( /*safety &&*/ new Date( targetYear, targetMonth, targetDate ).getMonth() !== targetMonth ) {
+        
+        while (  new Date( targetYear, targetMonth, targetDate ).getMonth() !== targetMonth ) {
             targetDate -= 1
-            /*safety -= 1
-            if ( !safety ) {
-                throw 'Fell into an infinite loop while navigating to ' + new Date( targetYear, targetMonth, targetDate ) + '.'
-            }*/
+            
         }
 
         value = [ targetYear, targetMonth, targetDate ]
     }
 
     return value
-} //DatePicker.prototype.navigate
+} 
 
-
-/**
- * Normalize a date by setting the hours to midnight.
- */
 DatePicker.prototype.normalize = function( value/*, options*/ ) {
     value.setHours( 0, 0, 0, 0 )
     return value
 }
 
 
-/**
- * Measure the range of dates.
- */
 DatePicker.prototype.measure = function( type, value/*, options*/ ) {
 
     var calendar = this
     
-    // If it's an integer, get a date relative to today.
     if ( _.isInteger( value ) ) {
         value = calendar.now( type, value, { rel: value } )
     }
 
-    // If it’s anything false-y, remove the limits.
     else if ( !value ) {
         value = type == 'min' ? -Infinity : Infinity
     }
 
-    // If it’s a string, parse it.
     else if ( typeof value == 'string' ) {
         value = calendar.parse( type, value )
     }
 
     return value
-} ///DatePicker.prototype.measure
+} 
 
-
-/**
- * Create a viewset object based on navigation.
- */
 DatePicker.prototype.viewset = function( type, dateObject/*, options*/ ) {
     return this.create([ dateObject.year, dateObject.month, 1 ])
 }
 
 
-/**
- * Validate a date as enabled and shift if needed.
- */
+
 DatePicker.prototype.validate = function( type, dateObject, options ) {
 
     var calendar = this,
 
-        // Keep a reference to the original date.
         originalDateObject = dateObject,
 
-        // Make sure we have an interval.
         interval = options && options.interval ? options.interval : 1,
 
-        // Check if the calendar enabled dates are inverted.
         isFlippedBase = calendar.item.enable === -1,
 
-        // Check if we have any enabled dates after/before now.
         hasEnabledBeforeTarget, hasEnabledAfterTarget,
-
-        // The min & max limits.
         minLimitObject = calendar.item.min,
         maxLimitObject = calendar.item.max,
 
-        // Check if we’ve reached the limit during shifting.
         reachedMin, reachedMax,
 
-        // Check if the calendar is inverted and at least one weekday is enabled.
         hasEnabledWeekdays = isFlippedBase && calendar.item.disable.filter( function( value ) {
 
-            // If there’s a date, check where it is relative to the target.
             if ( $.isArray( value ) ) {
                 var dateTime = calendar.create( value ).pick
                 if ( dateTime < dateObject.pick ) hasEnabledBeforeTarget = true
                 else if ( dateTime > dateObject.pick ) hasEnabledAfterTarget = true
             }
 
-            // Return only integers for enabled weekdays.
             return _.isInteger( value )
-        }).length/*,
-
-        safety = 100*/
-
-
-
-    // Cases to validate for:
-    // [1] Not inverted and date disabled.
-    // [2] Inverted and some dates enabled.
-    // [3] Not inverted and out of range.
-    //
-    // Cases to **not** validate for:
-    // • Navigating months.
-    // • Not inverted and date enabled.
-    // • Inverted and all dates disabled.
-    // • ..and anything else.
+        }).length
     if ( !options || (!options.nav && !options.defaultValue) ) if (
-        /* 1 */ ( !isFlippedBase && calendar.disabled( dateObject ) ) ||
-        /* 2 */ ( isFlippedBase && calendar.disabled( dateObject ) && ( hasEnabledWeekdays || hasEnabledBeforeTarget || hasEnabledAfterTarget ) ) ||
-        /* 3 */ ( !isFlippedBase && (dateObject.pick <= minLimitObject.pick || dateObject.pick >= maxLimitObject.pick) )
+        ( !isFlippedBase && calendar.disabled( dateObject ) ) ||
+        ( isFlippedBase && calendar.disabled( dateObject ) && ( hasEnabledWeekdays || hasEnabledBeforeTarget || hasEnabledAfterTarget ) ) ||
+        ( !isFlippedBase && (dateObject.pick <= minLimitObject.pick || dateObject.pick >= maxLimitObject.pick) )
     ) {
 
 
-        // When inverted, flip the direction if there aren’t any enabled weekdays
-        // and there are no enabled dates in the direction of the interval.
         if ( isFlippedBase && !hasEnabledWeekdays && ( ( !hasEnabledAfterTarget && interval > 0 ) || ( !hasEnabledBeforeTarget && interval < 0 ) ) ) {
             interval *= -1
         }
@@ -1105,16 +997,13 @@ DatePicker.prototype.nodes = function( isOpen ) {
                     lowestYear = focusedYear - numberYears,
                     highestYear = focusedYear + numberYears
 
-                // If the min year is greater than the lowest year, increase the highest year
-                // by the difference and set the lowest year to the min year.
+           
                 if ( minYear > lowestYear ) {
                     highestYear += minYear - lowestYear
                     lowestYear = minYear
                 }
 
-                // If the max year is less than the highest year, decrease the lowest year
-                // by the lower of the two: available and needed years. Then set the
-                // highest year to the max year.
+           
                 if ( maxYear < highestYear ) {
 
                     var availableYears = lowestYear - minYear,
@@ -1133,10 +1022,8 @@ DatePicker.prototype.nodes = function( isOpen ) {
                         item: function( loopedYear ) {
                             return [
 
-                                // The looped year and no classes.
                                 loopedYear, 0,
 
-                                // Set the value and selected index.
                                 'value=' + loopedYear + ( focusedYear == loopedYear ? ' selected' : '' )
                             ]
                         }
@@ -1147,12 +1034,9 @@ DatePicker.prototype.nodes = function( isOpen ) {
                 )
             }
 
-            // Otherwise just return the year focused
             return _.node( 'div', focusedYear, settings.klass.year )
-        } //createYearLabel
+        }
 
-
-    // Create and return the entire calendar.
     return _.node(
         'div',
         ( settings.selectYears ? createYearLabel() + createMonthLabel() : createMonthLabel() + createYearLabel() ) +
@@ -1170,12 +1054,11 @@ DatePicker.prototype.nodes = function( isOpen ) {
                 node: 'tr',
                 item: function( rowCounter ) {
 
-                    // If Monday is the first day and the month starts on Sunday, shift the date back a week.
                     var shiftDateBy = settings.firstDay && calendar.create([ viewsetObject.year, viewsetObject.month, 1 ]).day === 0 ? -7 : 0
 
                     return [
                         _.group({
-                            min: DAYS_IN_WEEK * rowCounter - viewsetObject.day + shiftDateBy + 1, // Add 1 for weekday 0index
+                            min: DAYS_IN_WEEK * rowCounter - viewsetObject.day + shiftDateBy + 1, 
                             max: function() {
                                 return this.min + DAYS_IN_WEEK - 1
                             },
@@ -1183,7 +1066,6 @@ DatePicker.prototype.nodes = function( isOpen ) {
                             node: 'td',
                             item: function( targetDate ) {
 
-                                // Convert the time date from a relative date to a target date.
                                 targetDate = calendar.create([ viewsetObject.year, viewsetObject.month, targetDate + ( settings.firstDay ? 1 : 0 ) ])
 
                                 var isSelected = selectedObject && selectedObject.pick == targetDate.pick,
@@ -1197,25 +1079,20 @@ DatePicker.prototype.nodes = function( isOpen ) {
                                         targetDate.date,
                                         (function( klasses ) {
 
-                                            // Add the `infocus` or `outfocus` classes based on month in view.
                                             klasses.push( viewsetObject.month == targetDate.month ? settings.klass.infocus : settings.klass.outfocus )
 
-                                            // Add the `today` class if needed.
                                             if ( nowObject.pick == targetDate.pick ) {
                                                 klasses.push( settings.klass.now )
                                             }
 
-                                            // Add the `selected` class if something's selected and the time matches.
                                             if ( isSelected ) {
                                                 klasses.push( settings.klass.selected )
                                             }
 
-                                            // Add the `highlighted` class if something's highlighted and the time matches.
                                             if ( isHighlighted ) {
                                                 klasses.push( settings.klass.highlighted )
                                             }
 
-                                            // Add the `disabled` class if something's disabled and the object matches.
                                             if ( isDisabled ) {
                                                 klasses.push( settings.klass.disabled )
                                             }
@@ -1232,10 +1109,10 @@ DatePicker.prototype.nodes = function( isOpen ) {
                                     ),
                                     '',
                                     _.ariaAttr({ role: 'presentation' })
-                                ] //endreturn
+                                ] 
                             }
                         })
-                    ] //endreturn
+                    ] 
                 }
             })
         ),
@@ -1247,7 +1124,6 @@ DatePicker.prototype.nodes = function( isOpen ) {
         })
     ) +
 
-    // * For Firefox forms to submit, make sure to set the buttons’ `type` attributes as “button”.
     _.node(
         'div',
         _.node( 'button', settings.today, settings.klass.buttonToday,
@@ -1263,49 +1139,38 @@ DatePicker.prototype.nodes = function( isOpen ) {
             ( isOpen ? '' : ' disabled' ) + ' ' +
             _.ariaAttr({ controls: calendar.$node[0].id }) ),
         settings.klass.footer
-    ) //endreturn
-} //DatePicker.prototype.nodes
+    ) 
+} 
 
 
 
 
-/**
- * The date picker defaults.
- */
 DatePicker.defaults = (function( prefix ) {
 
     return {
 
-        // The title label to use for the month nav buttons
         labelMonthNext: 'Next month',
         labelMonthPrev: 'Previous month',
 
-        // The title label to use for the dropdown selectors
         labelMonthSelect: 'Select a month',
         labelYearSelect: 'Select a year',
 
-        // Months and weekdays
         monthsFull: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
         monthsShort: [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ],
         weekdaysFull: [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ],
         weekdaysShort: [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ],
 
-        // Today and clear
         today: 'Today',
         clear: 'Clear',
         close: 'Close',
 
-        // Picker close behavior
         closeOnSelect: true,
         closeOnClear: true,
 
-        // Update input value on select/clear
         updateInput: true,
 
-        // The format to show on the `input` element
         format: 'd mmmm, yyyy',
 
-        // Classes
         klass: {
 
             table: prefix + 'table',
@@ -1345,9 +1210,7 @@ DatePicker.defaults = (function( prefix ) {
 
 
 
-/**
- * Extend the picker to add the date picker.
- */
+
 Picker.extend( 'pickadate', DatePicker )
 
 

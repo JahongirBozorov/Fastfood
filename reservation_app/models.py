@@ -2,13 +2,13 @@ from django.db import models
 
 
 class Reservation(models.Model):
-    name = models.CharField(max_length=30, verbose_name='نام و نام خانوادگی')
-    email = models.EmailField(verbose_name='ایمیل')
-    phone = models.CharField(max_length=11, verbose_name='شماره همراه')
-    date = models.DateField(verbose_name='تاریخ رزرو', auto_now=False, auto_now_add=False)
-    time = models.TimeField(verbose_name='زمان رزرو', auto_now=False, auto_now_add=False)
-    number = models.PositiveSmallIntegerField(verbose_name='تعداد نفرات رزروی')
+    name = models.CharField(max_length=30, verbose_name='Full Name')
+    email = models.EmailField(verbose_name='Email')
+    phone = models.CharField(max_length=11, verbose_name='Phone Number')
+    date = models.DateField(verbose_name='Reservation Date', auto_now=False, auto_now_add=False)
+    time = models.TimeField(verbose_name='Reservation Time', auto_now=False, auto_now_add=False)
+    number = models.PositiveSmallIntegerField(verbose_name='Number of Guests')
 
     class Meta:
-        verbose_name = 'رزرو'
-        verbose_name_plural = 'رزرو ها'
+        verbose_name = 'Reservation'
+        verbose_name_plural = 'Reservations'
